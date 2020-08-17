@@ -1,0 +1,110 @@
+
+*** These modified files were found in JOE when it aborted on Mon Aug 17 13:04:42 2020
+*** JOE was aborted by UNIX signal 1
+
+*** File 'telegraf.yaml'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf-config
+data:
+  telegraf.conf: |+
+    [[outputs.influxdb]]
+      urls = ["$INFLUXDB_URL"]
+      database = "$INFLUXDB_DB"
+      username = "$INFLUXDB_USER"
+      password = "$INFLUXDB_USER_PASSWORD"
+# Statsd Server
+    [[inputs.mqtt_consumer]]
+      servers = ["mosquitto:1883"]
+      qos = 0
+      topics = [
+          "#"
+      ]
+      client_id = ""
+      username = "telegraf"
+      password = "$INFLUXDB_USER_PASSWORD"
+      data_format = "value"
+      persistent_session = false
+      max_tcp_connections = 250
+      tcp_keep_alive = false
+      service_address = ":8125"
+      delete_gauges = true
+      delete_counters = true
+      delete_sets = true
+      delete_timings = true
+      metric_separator = "."
+      allowed_pending_messages = 10000
+      percentile_limit = 1000
+      parse_data_dog_tags = true 
+      read_buffer_size = 65535
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: telegraf
+spec:
+  selector:
+    matchLabels:
+      app: telegraf
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: telegraf
+    spec:
+      containers:
+        - image: telegraf:1.10.0
+          name: telegraf
+          envFrom:
+            - secretRef:
+                name: telegraf-secrets
+          volumeMounts:
+            - name: telegraf-config-volume
+              mountPath: /etc/telegraf/telegraf.conf
+              subPath: telegraf.conf
+              readOnly: true
+      volumes:
+        - name: telegraf-config-volume
+          configMap:
+            name: telegraf-config
+#---
+#kubectl expose deployment telegraf --port=8125 --target-port=8125 --protocol=UDP --type=NodePort
+
+*** File '(Unnamed)'
+luigi
+pubkey
+privkey
+vars.
+kube_cluster
+config
+LD_PR
+CREATE EXT
+poetry
+DAGSTER_H
+
+*** File '(Unnamed)'
+influxdb.yaml
+influxdb.yaml
+influxdb.yaml
+influxdb.yaml
+telegraf-secret.yaml
+telegraf-secret.yaml
+telegraf-secret.yaml
+telegraf-secret.yaml
+README.md
+README.md
+telegraf.yaml
+telegraf.yaml
+telegraf.yaml
+telegraf.yaml
+telegraf.yaml
+telegraf.yaml
+telegraf.yaml
+
+*** File '* Startup Log *'
+Processing '/etc/joe/joerc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/joerc

@@ -1,0 +1,71 @@
+apiVersion: v1
+stringData:
+  passwd: |-
+    frank_iot:$6$Eo+/DU3pfX2qQbec$Elo0T92u4Itl+v8TpADVy2E5Z+mgoueyeYddz8whZVlGbJ+GWQBhyZZZpUiEAYG4WNwp9uhiNuBemh0414yOUw==
+kind: Secret
+metadata:
+  name: mqtt-creds
+  namespace: frank-iot
+type: Opaque
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mqtt-config
+  namespace: frank-iot
+data:
+  mosquitto.conf: |
+    password_file /m/passwd
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: frank-iot
+  labels:
+    app: mosquitto
+  name: mosquitto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mosquitto
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      containers:
+      - image: docker.io/eclipse-mosquitto:1.6
+        imagePullPolicy: IfNotPresent
+        name: mosquitto
+        volumeMounts:
+        - mountPath: /m
+          name: msecret
+        - mountPath: /mosquitto/config
+          name: mconfig
+      restartPolicy: Always
+      volumes:
+      - name: mconfig
+        configMap:
+          name: mqtt-config
+      - name: msecret
+        secret:
+          secretName: mqtt-creds
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mosquitto
+  name: mosquitto
+  namespace: frank-iot
+spec:
+  ports:
+  - port: 1883
+    protocol: TCP
+    targetPort: 1883
+  selector:
+    app: mosquitto
+  sessionAffinity: None
+  type: LoadBalancer
+  loadBalancerIP: 51.145.183.215
