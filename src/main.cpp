@@ -41,12 +41,13 @@ void setup_triggermode() {
   Serial.begin(9600);
 }
 
-int oldState;
+int state, oldState;
 unsigned int maxRetries;
 long int loopCount;
 
 void setup() {
   oldState = -1;
+  state = -1;
   maxRetries = 20;
   loopCount = 0;
   setup_sermode();
@@ -204,6 +205,7 @@ int getdist_sermode() {
 
 void loop() {
   char charBuf[50];
+  
 
   loopCount += 1;
   if (!client.connected()) {
@@ -215,7 +217,9 @@ void loop() {
     ESP.restart();
   }
 
-  int state = getdist_sermode();
+  int newState = getdist_sermode();
+  // take the maximum distance found. other distances are probably noise
+  state = max(state, newState);
   if (loopCount % 60 == 0) {
     Serial.print("got new state ");
     Serial.print(state);
@@ -228,6 +232,7 @@ void loop() {
       }
       oldState = state;
     }
+    state = -1;
   }
   if (loopCount % 600 == 0) {
     ltoa(loopCount, charBuf, 10);
