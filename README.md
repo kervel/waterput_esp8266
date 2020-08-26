@@ -20,7 +20,7 @@ Following components are needed:
 * male pin header, 4 pins, 2.54mm pitch for reset/program jumper (optional)
 * a jumper or a jumper cable (optional)
 
-![pcb](pics/pcb.png "The assembled PCB")
+![pcb](pics/pcb.jpg "The assembled PCB")
 
 # Uploading the firmware
 
@@ -28,7 +28,7 @@ Use platformIO to build it. To upload it, ground the "PRG" pin on the board by c
 
 After connecting the module, uploading the software should be possible with control-shift-P
 
-![pcb](pics/pcb.png "The assembled PCB")
+![pcb](pics/program.jpg "Programming the PCB")
 
 # Configuring the firmware
 
