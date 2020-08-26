@@ -1,5 +1,12 @@
 #include "wifi_mgmt.h"
 
+char mqtt_server[40];
+char mqtt_port[6] = "8080";
+char mqtt_user[60];
+char mqtt_pass[60];
+char identity[60] = "";
+
+
 WiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
 WiFiManagerParameter custom_mqtt_port("port", "mqtt port", mqtt_port, 5);
 WiFiManagerParameter custom_mqtt_user("username", "mqtt username", mqtt_user, 60);
@@ -24,12 +31,14 @@ bool save_littlefs_config() {
     File configFile = LittleFS.open("/config.json", "w");
     if (!configFile) {
       Serial.println("failed to open config file for writing");
+      return false;
     } else {
         json.prettyPrintTo(Serial);
         json.printTo(configFile);
         configFile.close();
         Serial.println("saved config file");
         json.prettyPrintTo(Serial);
+        return true;
     }
 }
 
@@ -37,6 +46,9 @@ std::shared_ptr<PubSubClient>
 setup_wifi_and_mqtt(MQTT_CALLBACK_SIGNATURE) {
   bool has_config = read_littlefs_config();
   auto wm = createWifiManager();
+  if (!has_config) {
+      wm->resetSettings();
+  }
   wm->setConfigPortalTimeout(180);
   Serial.println(String ("connecting as /") + String(ESP.getChipId()));
   if (!wm->autoConnect(String(ESP.getChipId()).c_str(), "admin")) {
@@ -107,8 +119,9 @@ bool read_littlefs_config() {
   strcpy(mqtt_port, json["mqtt_port"]);
   strcpy(mqtt_user, json["mqtt_user"]);
   strcpy(mqtt_pass, json["mqtt_pass"]);
+  return true;
 }
-String unique_topic(char * topic) {
+String unique_topic(const char * topic) {
   String ONLINE_TOPIC = "/";
   ONLINE_TOPIC += String(ESP.getChipId());
   ONLINE_TOPIC += "/";

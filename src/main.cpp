@@ -4,7 +4,7 @@
 
 
 // fwd declarations
-bool setup_wifi();
+void setup_wifi();
 
 
 unsigned int maxRetries = 20;
@@ -35,7 +35,7 @@ void setup() {
   setup_wifi();
 }
 
-bool setup_wifi() {
+void setup_wifi() {
   delay(10);
   // We start by connecting to a WiFi network
   client = setup_wifi_and_mqtt(callback);
@@ -96,4 +96,5 @@ void loop() {
     }
   }
   client->loop();
+  
 }

@@ -1,4 +1,5 @@
 #include "ultrasensor.h"
+SoftwareSerial sensor; // RX = echoPin
 
 void setup_sermode() {
   sensor.begin(9600,SWSERIAL_8N1, echoPin, pingPin, false, 16536, 4096);
