@@ -18,4 +18,5 @@ bool read_littlefs_config();
 bool save_littlefs_config();
 String unique_topic(const char * topic);
 String online_topic();
+void clear_mqtt_settings();
 #endif

@@ -1,7 +1,7 @@
 #include "wifi_mgmt.h"
 WiFiClient wifi_client;
 char mqtt_server[40];
-char mqtt_port[6] = "8080";
+char mqtt_port[6] = "1883";
 char mqtt_user[60];
 char mqtt_pass[60];
 char identity[60] = "";
@@ -100,7 +100,15 @@ std::shared_ptr<WiFiManager> createWifiManager() {
   manager->addParameter(&custom_mqtt_server);
   manager->addParameter(&custom_mqtt_port);
   manager->addParameter(&custom_mqtt_user);
+  manager->addParameter(&custom_mqtt_pass);
   return manager;
+}
+
+void clear_mqtt_settings() {
+    if (!LittleFS.begin()) {
+        return;
+    }
+    LittleFS.remove("/config.json");
 }
 
 bool read_littlefs_config() {

@@ -1,7 +1,8 @@
 #define SERIAL_NUMBER "wl_000001"
 #include "ultrasensor.h"
 #include "wifi_mgmt.h"
-
+#define GPIO0 D3
+#define GPIO2 D4
 // fwd declarations
 void setup_wifi();
 
@@ -32,10 +33,22 @@ void setup() {
   loopCount = 0;
   localLoop = 0;
   Serial.begin(9600);
+  pinMode(GPIO0, INPUT);
+  pinMode(GPIO2, OUTPUT);
+  digitalWrite(GPIO2, 1);
   setup_sermode();
   setup_wifi();
   for (int i = 0; i < MEAS_INT; i++) {
     measurements[i] = 0;
+  }
+}
+
+void blink(int n_times, int dlay=300) {
+  for (int i = 0; i < n_times; i++) {
+    digitalWrite(GPIO2, 0);
+    delay(dlay);
+    digitalWrite(GPIO2, 1);
+    delay(dlay);
   }
 }
 
@@ -77,6 +90,15 @@ void loop() {
 
   loopCount += 1;
 
+  if (!digitalRead(GPIO0)) {
+    delay(100);
+    Serial.println("GPIO0 pin pulled down during operation! Factory reset!");
+    blink(10,200);
+    clear_mqtt_settings();
+    WiFi.disconnect(true);
+    ESP.restart();
+  }
+
   // take the maximum distance found. other distances are probably noise
   if (localLoop >= MEAS_INT) {
     localLoop = 0;
@@ -91,6 +113,7 @@ void loop() {
                            String(state).c_str())) {
         maxRetries -= 1;
       }
+      blink(3, 100);
       oldState = state;
     }
     state = -1;
