@@ -12,19 +12,27 @@ void setup_triggermode() {
 }
 
 double microsecondsToCentimeters(long microseconds) {
-  return ((double)(microseconds)) / 29 / 2;
+  return ((double)(microseconds)) / 29.0 / 2.0;
 }
 
 
 double getdist_triggermode() {
-  long duration, cm;
+  long duration, duration2;
+  double cm;
   digitalWrite(pingPin, LOW);
   delayMicroseconds(2);
   digitalWrite(pingPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(pingPin, LOW);
   duration = pulseIn(echoPin, HIGH);
+  //duration2 = pulseIn(echoPin, LOW);
+  if (duration > 50000) {
+      return 0;
+  }
   cm = microsecondsToCentimeters(duration);
+  //Serial.print("microsecs: ");
+  //Serial.println(duration);
+  //Serial.println(duration2);
   delay(100);
   return cm;
 }
