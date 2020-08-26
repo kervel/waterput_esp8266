@@ -51,3 +51,10 @@ Power up the firmware, and *while powered up* connect a jumper between PRG and G
 Note that this *will not work* if you already connect the jumper cable
 before powerup, because then the board will enter firmware download mode.
 
+# Data logging on kubernetes
+
+The k8s subdirectory contains resources for:
+* a MQTT server
+* influxdb
+* telegraf configured to log everything from the MQTT server to influxdb
+* grafana
