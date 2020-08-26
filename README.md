@@ -48,3 +48,6 @@ Every time information is sent to MQTT, the LED will flash briefly 3 times.
 # Firmware factory reset
 
 Power up the firmware, and *while powered up* connect a jumper between PRG and GND pins. The blue LED will immediately blink 10 times and all settings will be cleared.
+Note that this *will not work* if you already connect the jumper cable
+before powerup, because then the board will enter firmware download mode.
+
