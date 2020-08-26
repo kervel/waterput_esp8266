@@ -20,6 +20,10 @@ Following components are needed:
 * male pin header, 4 pins, 2.54mm pitch for reset/program jumper (optional)
 * a jumper or a jumper cable (optional)
 
+To connect the acoustic sensor, note that the `TRG` pin might be called `RX`
+and the `ECHO` pin might be called `TX`. This is because some boards can be
+configured to operate in serial mode by adding a resistor.
+
 ![pcb](pics/pcb.jpg "The assembled PCB")
 
 # Uploading the firmware
