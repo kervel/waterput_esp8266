@@ -9,3 +9,7 @@ before_script:
 job:
   stage: test
   script: "platformio run -e esp12e"
+  artifacts:
+    paths:
+      - .pio/build/esp12e/firmware.elf
+    expire_in: 1 week
