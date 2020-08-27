@@ -32,7 +32,7 @@ Use platformIO to build it. To upload it, ground the "PRG" pin on the board by c
 
 After connecting the module, uploading the software should be possible with control-shift-P
 
-![pcb](pics/program.jpg "Programming the PCB")
+![program](pics/program.jpg "Programming the PCB")
 
 # Configuring the firmware
 
@@ -44,6 +44,10 @@ Write down the chip ID (which is equal to the access point name). After configur
 * `/[chip_id]/state` will contain the distance
 
 Every time information is sent to MQTT, the LED will flash briefly 3 times.
+
+![main_screen](pics/main_screen.jpg "Main screen")
+![configure_net](pics/configure_net.jpg "Configure network")
+
 
 # Firmware factory reset
 
