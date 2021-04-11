@@ -11,6 +11,9 @@
 #include <ArduinoJson.h>
 #include <tuple>
 
+#define GPIO0 D3
+#define GPIO2 D4
+
 
 std::shared_ptr<PubSubClient> setup_wifi_and_mqtt(MQTT_CALLBACK_SIGNATURE);
 std::shared_ptr<WiFiManager> createWifiManager();
@@ -19,4 +22,6 @@ bool save_littlefs_config();
 String unique_topic(const char * topic);
 String online_topic();
 void clear_mqtt_settings();
+void check_reset_pin();
+void blink(int n_times, int dlay=300);
 #endif

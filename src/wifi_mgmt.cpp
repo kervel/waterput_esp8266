@@ -44,6 +44,29 @@ bool save_littlefs_config() {
   }
 }
 
+void blink(int n_times, int dlay
+) {
+  for (int i = 0; i < n_times; i++) {
+    digitalWrite(GPIO2, 0);
+    delay(dlay);
+    digitalWrite(GPIO2, 1);
+    delay(dlay);
+  }
+}
+
+
+void check_reset_pin() {
+  if (!digitalRead(GPIO0)) {
+    delay(100);
+    Serial.println("GPIO0 pin pulled down during operation! Factory reset!");
+    blink(10,200);
+    clear_mqtt_settings();
+    WiFi.disconnect(true);
+    ESP.restart();
+  }
+
+}
+
 std::shared_ptr<PubSubClient> setup_wifi_and_mqtt(MQTT_CALLBACK_SIGNATURE) {
   bool has_config = read_littlefs_config();
   auto wm = createWifiManager();
@@ -61,6 +84,7 @@ std::shared_ptr<PubSubClient> setup_wifi_and_mqtt(MQTT_CALLBACK_SIGNATURE) {
   int internal_retries = 20;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
+    check_reset_pin();
     internal_retries -= 1;
     if (internal_retries < 1) {
       Serial.println("wifi fail, rebooting");
@@ -85,9 +109,12 @@ std::shared_ptr<PubSubClient> setup_wifi_and_mqtt(MQTT_CALLBACK_SIGNATURE) {
   auto client_id = String(ESP.getChipId());
   auto sonline_topic = online_topic();
   Serial.println(String("connecting to MQTT broker:") +  mqtt_server + " / " + mqtt_port + " / "  + mqtt_user + " / " + mqtt_pass + " / " + client_id + " / " + sonline_topic);
-  if (!mqtt->connect(client_id.c_str(), NULL, NULL,
-                     sonline_topic.c_str(), 0, 1, "0")) {
+  if (!mqtt->connect(client_id.c_str(), 
+                    strlen(mqtt_user) == 0 ? NULL : mqtt_user, 
+                    strlen(mqtt_pass) == 0 ? NULL : mqtt_pass,
+                    sonline_topic.c_str(), 0, 1, "0")) {
     Serial.println("MQTT connection failed. restarting ...");
+    check_reset_pin();
     ESP.restart();
   }
   Serial.println("connection fine");
